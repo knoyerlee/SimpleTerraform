@@ -18,6 +18,14 @@ jobs:
         with:
           tf_actions_version: 0.12.13
           tf_actions_subcommand: "plan"
+      - name: "Approval"
+        uses: trstringer/manual-approval@v1
+        with:
+          secret: ${{ github.TOKEN }}
+          approvers: knoyerlee
+          minimum-approvals: 1
+          issue-title: "Deploying terraform configuration to AWS"
+          issue-body: "Please approve or deny the deployment"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
