@@ -1,9 +1,9 @@
 #### VPC ####
 resource "aws_vpc" "demo-vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr_block
 
   tags = {
-    Name = "Demo VPC"
+    Name = var.vpc_tag_name
   }
 }
 
@@ -12,7 +12,7 @@ resource "aws_internet_gateway" "demo-igateway" {
   vpc_id = aws_vpc.demo-vpc.id
 
   tags = {
-    Name = "Demo Internet Gateway"
+    Name = var.ig_tag_name
   }
 }
 
@@ -21,28 +21,28 @@ resource "aws_route_table" "demo-route-table" {
   vpc_id = aws_vpc.demo-vpc.id
 
   route {
-    cidr_block = "0.0.0.0/0" # Default route send everything to internet gateway.
+    cidr_block = var.route_cidr_block_ipv4 # Default route send everything to internet gateway.
     gateway_id = aws_internet_gateway.demo-igateway.id
   }
 
   route {
-    ipv6_cidr_block = "::/0" # Default route send everything to internet gateway.
+    ipv6_cidr_block = var.route_cidr_block_ipv6 # Default route send everything to internet gateway.
     gateway_id      = aws_internet_gateway.demo-igateway.id
   }
 
   tags = {
-    Name = "Demo Route Table"
+    Name = var.route_table_name
   }
 }
 
 #### Subnet ####
 resource "aws_subnet" "demo-subnet" {
   vpc_id            = aws_vpc.demo-vpc.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
+  cidr_block        = var.subnet_cidr_block
+  availability_zone = var.subnet_az
 
   tags = {
-    Name = "Demo Subnet"
+    Name = var.subnet_name
   }
 }
 
@@ -54,32 +54,21 @@ resource "aws_route_table_association" "association-a" {
 
 #### Create a Security Group ####
 resource "aws_security_group" "allow-web-traffic" {
-  name        = "allow-web"
-  description = "Allow inbound web traffic"
+  name        = var.sg_name
+  description = var.sg_description
   vpc_id      = aws_vpc.demo-vpc.id
 
-  ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # allow any traffic from the outside.
-  }
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # allow any traffic from the outside.
+  dynamic "ingress" {
+    for_each = var.sg_ingress
+    content {
+      description = ingress.value.description
+      from_port   = ingress.value.from_port
+      to_port     = ingress.value.to_port
+      protocol    = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_blocks
+    }
   }
 
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"] # allow any traffic from the outside.
-  }
 
   egress {
     # Allow everything out.
