@@ -2,6 +2,13 @@ name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
 jobs:
+  ESTABLISH-ENV-VARIABLES:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Test Run
+      - run: echo $TEST_VAR
+      - env:
+          TEST_VAR: ${{secrets.AWS_ACCESS_KEY}}
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
     steps:
