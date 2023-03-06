@@ -6,8 +6,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Test Run
-      - run: echo $TEST_VAR
-      - env:
+        run: |
+          echo "$TEST_VAR"
+        env:
           TEST_VAR: ${{secrets.AWS_ACCESS_KEY}}
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
