@@ -6,7 +6,7 @@ jobs:
     name: "Terraform"
     runs-on: ubuntu-latest
     steps:
-      - name: "Checkout"
+      - name: "Terraform Install"
         uses: actions/checkout@master
       - name: "Terraform Init"
         uses: hashicorp/terraform-github-actions@master
