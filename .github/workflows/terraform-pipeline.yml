@@ -20,8 +20,7 @@ jobs:
           tf_actions_subcommand: "plan"
       - uses: trstringer/manual-approval@v1
         with:
-          secret: ${{ github.TOKEN }}
-          approvers: user1,user2,org-team1
+          approvers: knoyerlee
           minimum-approvals: 1
           issue-title: "Deploying v1.3.5 to prod from staging"
           issue-body: "Please approve or deny the deployment of version v1.3.5."
@@ -29,6 +28,7 @@ jobs:
           additional-approved-words: ""
           additional-denied-words: ""
         env:
+          secret: ${{ github.TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           AWS_ACCESS_KEY_ID: ${{secrets.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY}}
